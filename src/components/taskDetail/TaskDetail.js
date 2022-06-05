@@ -7,6 +7,7 @@ function TaskDetail(props) {
     const setTaskList = props.setTaskList
     const oldTask = props.task
     const setSelectDetailTask = props.setSelectDetailTask
+    const errorLog = useRef(null)
 
     const [task, setTask] = useState(oldTask)
 
@@ -40,16 +41,39 @@ function TaskDetail(props) {
     }
 
     const handleSubmitButton = () => {
-        var data = taskList
-        const index =  data.findIndex(obj => obj.taskID == task.taskID)
-        data[index] = task
-        setTaskList([...data])
-        localStorage.setItem('taskList', JSON.stringify([...data])) 
-        setSelectDetailTask('')
+        if(!task.taskTitle) {
+            errorLog.current.classList.add('active')
+        }else {
+            var data = taskList
+            const index =  data.findIndex(obj => obj.taskID == task.taskID)
+            data[index] = task
+            setTaskList([...data])
+            localStorage.setItem('taskList', JSON.stringify([...data])) 
+            setSelectDetailTask('')
+            if(errorLog.current.classList.contains('active')) {
+                errorLog.current.classList.remove('active')
+            }
+        } 
     }
 
     return (
         <div id='detail-task-container'>
+            <div className='task-title'>
+                <input
+                    id='task-title-input' 
+                    type='text'
+                    name='taskTitle'
+                    key='taskTitle'
+                    value={task.taskTitle}
+                    onChange={(e) => {textInputOnchange(e)}}
+                    placeholder='Add new task...'
+                ></input>
+                <div className='error-log' ref={errorLog}>
+                    <span>
+                        This field is require
+                    </span>
+                </div>
+            </div>
             
             <div className='task-description'>
                 <span className='input-title'> Description </span>
